@@ -447,6 +447,11 @@ select:-webkit-autofill {
 .title-char {
     display: inline-block;
     transform-origin: center 80%;
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: var(--text-primary);
+    -webkit-text-fill-color: transparent;
 }
 
 .main-content {
