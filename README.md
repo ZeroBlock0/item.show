@@ -19,6 +19,21 @@
 - `items.json` — 你的数据文件（自行维护）
 - `CNAME` — 自定义域名（若使用 GitHub Pages）
 
+## 动画 & anime.js 4.2.2
+
+- 已内置官方 anime.js **4.2.2**（`anime/dist/bundles/anime.umd.min.js`）。页面在 `<head>` 中本地加载，无需外网 CDN。
+- `script.js` 中新增了以下基于文档示例改造的特效：
+  - `initPageIntroTimeline()`：首屏淡入时间线，分段/stagger 控制。
+  - `startAuroraBackgroundAnimation()`：通过 CSS 变量驱动的极光背景渐变。
+  - `initAmbientOrbs()`：创建漂浮粒子层，使用随机 translate/scale 循环。
+  - `pulseStatCards()`：仪表卡片 icon 的循环脉冲。
+  - `runItemCardAnimation()`：物品卡片 3D 轻微旋转 + 模糊过渡。
+- CSS 中新增 `--aurora-*` 变量及 `#ambientOrbs/.ambient-orb` 样式，深浅主题都会自动适配。
+- 若希望扩展动画：
+  1. 在 `script.js` 内调用 anime API（推荐 `timeline`、`stagger`、`keyframes`）。
+  2. 使用 `animeIsReady()` 先判断库是否可用，避免离线加载异常。
+  3. 对于无障碍用户，`prefers-reduced-motion` 下会自动禁用环境特效。
+
 
 ## items.json 数据结构
 
@@ -34,12 +49,14 @@
 - `category`（string）— 如 “电子设备”
 
 可接受的日期格式：
+
 - 类 ISO 字符串：`YYYY-MM-DD`、`YYYY/MM/DD`、`YYYY.MM.DD`
 - 只有年月：`YYYY-MM`（默认按当月 1 日处理）
 - 时间戳：毫秒或秒（自动识别）
 - 表示“无限期”的特殊值：`null`、`"0"`、`0`
 
 示例：
+
 ```json
 [
   {
@@ -86,6 +103,7 @@
 
 
 说明：
+
 - 若 `retirementDate` 为“无限期”，日均成本 = 价格 / 已使用天数
 - 保修状态：
   - 已过保：今天 > `warrantyDate`
@@ -96,10 +114,13 @@
 ## 常见问题（FAQ）
 
 问：为什么加载 items.json 时出现 CORS 错误？
+
 - 答：你很可能通过 file:// 打开了页面。请使用本地 Web 服务器（http:// 或 https://）。参见“快速开始”。
 
 问：如何通过代码切换语言或主题？
+
 - 答：语言：更新 `#langSwitcher` 或使用胶囊按钮；主题：调用 `window.applyThemeMode('auto'|'light'|'dark')` 或使用胶囊按钮。两者都会持久化设置。
 
 问：支持哪些日期格式？
+
 - 答：见“items.json 数据结构”。解析器支持多格式字符串和时间戳。

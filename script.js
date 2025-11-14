@@ -103,6 +103,126 @@ let globalTotalValue = 0;
 let globalTotalItems = 0;
 let globalAvgDailyCost = 0;
 
+function animeIsReady() {
+  return typeof anime !== "undefined";
+}
+
+function initPageIntroTimeline() {
+  if (!animeIsReady()) return;
+  const targets = ["#mainHeader", ".time-banner", ".stat-card", ".items-section"];
+  anime.set(targets, { opacity: 0, translateY: 30 });
+  anime
+    .timeline({ easing: "easeOutExpo", duration: 650 })
+    .add({ targets: "#mainHeader", opacity: [0, 1], translateY: [-30, 0] })
+    .add(
+      {
+        targets: ".time-banner",
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 600,
+      },
+      "-=250",
+    )
+    .add(
+      {
+        targets: ".stat-card",
+        opacity: [0, 1],
+        translateY: [40, 0],
+        delay: anime.stagger(120),
+        duration: 700,
+      },
+      "-=200",
+    )
+    .add(
+      {
+        targets: ".items-section",
+        opacity: [0, 1],
+        scale: [0.95, 1],
+        duration: 600,
+      },
+      "-=250",
+    );
+}
+
+function startAuroraBackgroundAnimation() {
+  if (!animeIsReady()) return;
+  anime({
+    targets: document.documentElement,
+    "--aurora-hue-1": [205, 325],
+    "--aurora-hue-2": [285, 125],
+    "--aurora-angle": ["-15deg", "345deg"],
+    duration: 28000,
+    direction: "alternate",
+    easing: "linear",
+    loop: true,
+  });
+}
+
+function initAmbientOrbs(count = 6) {
+  if (!animeIsReady()) return;
+  if (document.getElementById("ambientOrbs")) return;
+  const layer = document.createElement("div");
+  layer.id = "ambientOrbs";
+  document.body.appendChild(layer);
+  Array.from({ length: count }).forEach((_, index) => {
+    const orb = document.createElement("span");
+    orb.className = "ambient-orb";
+    orb.style.top = `${Math.random() * 100}%`;
+    orb.style.left = `${Math.random() * 100}%`;
+    layer.appendChild(orb);
+    anime({
+      targets: orb,
+      translateX: () => anime.random(-80, 80),
+      translateY: () => anime.random(-80, 80),
+      scale: () => anime.random(0.6, 1.4),
+      easing: "easeInOutSine",
+      direction: "alternate",
+      loop: true,
+      duration: anime.random(5000, 11000),
+      delay: index * 250,
+      opacity: [{ value: 0.15, duration: 0 }, { value: 0.45, duration: 1800 }],
+    });
+  });
+}
+
+function pulseStatCards() {
+  if (!animeIsReady()) return;
+  anime({
+    targets: ".stat-card .icon",
+    keyframes: [
+      { scale: 0.9, opacity: 0.15, duration: 0 },
+      { scale: 1.25, opacity: 0.3, duration: 900 },
+      { scale: 1, opacity: 0.2, duration: 800 },
+    ],
+    easing: "easeInOutSine",
+    delay: anime.stagger(350),
+    loop: true,
+  });
+}
+
+function runItemCardAnimation() {
+  if (!animeIsReady()) return;
+  const cards = document.querySelectorAll(".item-card");
+  if (!cards.length) return;
+  anime({
+    targets: cards,
+    opacity: [0, 1],
+    translateY: [40, 0],
+    rotateX: [-8, 0],
+    scale: [0.96, 1],
+    delay: anime.stagger(85),
+    duration: 900,
+    easing: "easeOutQuint",
+  });
+  anime({
+    targets: cards,
+    "--blur-amount": ["14px", "0px"],
+    delay: anime.stagger(85),
+    duration: 1100,
+    easing: "easeOutCubic",
+  });
+}
+
 /**
  * Updates the current date and time displayed in the banner.
  */
@@ -437,17 +557,7 @@ function renderItems(itemsToRender) {
 
   // Staggered slide-in animation for item cards
 
-  anime({
-    targets: ".item-card",
-
-    translateY: [20, 0],
-
-    opacity: [0, 1],
-
-    delay: anime.stagger(100),
-
-    easing: "easeOutQuad",
-  });
+  requestAnimationFrame(() => runItemCardAnimation());
 }
 
 /**
@@ -580,6 +690,10 @@ function handleSearch() {
 document.addEventListener("DOMContentLoaded", () => {
   updateRealTime();
   setInterval(updateRealTime, 1000);
+  initPageIntroTimeline();
+  startAuroraBackgroundAnimation();
+  initAmbientOrbs();
+  pulseStatCards();
 
   const initialRender = () => {
     updateStatistics();

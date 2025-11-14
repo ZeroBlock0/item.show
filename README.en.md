@@ -14,14 +14,29 @@ A lightweight static dashboard to browse your personal items and their lifecycle
 - `items.json` — your items data (you own this file)
 - `CNAME` — optional custom domain (if using GitHub Pages)
 
+## Animation & anime.js 4.2.2
+
+- Bundled with the official anime.js **4.2.2** build (`anime/dist/bundles/anime.umd.min.js`) so the dashboard works offline/CDN-free.
+- `script.js` now exposes several doc-inspired helpers:
+  - `initPageIntroTimeline()` — orchestrates the header, banner, stats, and content entrance with `timeline` + `stagger`.
+  - `startAuroraBackgroundAnimation()` — animates CSS custom props that drive the aurora gradients in `styles.css`.
+  - `initAmbientOrbs()` — spawns floating orb particles with randomized translate/scale loops.
+  - `pulseStatCards()` — gently pulses stat-card icons using keyframes.
+  - `runItemCardAnimation()` — applies depth, blur dissolve, and staggered entrance to item cards.
+- Styles introduce `--aurora-*` variables plus `#ambientOrbs` / `.ambient-orb` layers; they respect both light/dark tokens automatically.
+- To extend animations:
+  1. Call anime APIs inside `script.js` (timeline/keyframes/stagger recommended).
+  2. Use `animeIsReady()` to guard against missing scripts in custom deployments.
+  3. Accessibility is honored: ambient layers disable automatically under `prefers-reduced-motion`.
+
 
 ## Running from file:// (CORS)
 
 If you open `index.html` directly via file://, the browser will block `fetch('items.json')` due to CORS/same-origin rules. You will see a message like:
 
-- Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at file:///.../items.json. (Reason: CORS request not http)
 
 Solutions:
+
 - Serve the folder via a local web server (see Quick start).
 - Or, for development only, inline the data in `script.js` (not recommended for production).
 
@@ -30,22 +45,16 @@ Solutions:
 
 Each item is an object with the following fields:
 
-- `id` (number) — unique identifier
-- `name` (string) — display name, emoji supported
-- `purchaseDate` (string|number) — date string or timestamp (see accepted formats below)
-- `price` (number) — purchase price
-- `retirementDate` (string|number|null|"0"|0) — end-of-life date or indefinite usage
-- `warrantyDate` (string|number|null) — warranty end date
-- `notes` (string) — short note
-- `category` (string) — e.g., “电子设备”
 
 Accepted date formats (robust parsing):
+
 - ISO-like strings: `YYYY-MM-DD`, `YYYY/MM/DD`, `YYYY.MM.DD`
 - Partial month: `YYYY-MM` (treated as the 1st day of that month)
 - Timestamps: milliseconds or seconds (auto-detected)
 - Special indefinite values: `null`, `"0"`, `0`
 
 Example:
+
 ```json
 [
   {
@@ -82,6 +91,7 @@ Example:
 ```
 
 Notes:
+
 - Currency symbol is presentation only (“¥”), not part of the schema.
 - If `retirementDate` is indefinite, daily cost is price divided by days used so far.
 - Warranty status:
@@ -93,10 +103,7 @@ Notes:
 ## FAQ
 
 Q: Why do I see a CORS error loading items.json?  
-- A: You are probably opening via file://. Use a local web server (http:// or https://).
 
 Q: How do I change the language or theme?  
-- A: Update `#langSwitcher` / use the language pill; call `window.applyThemeMode('auto'|'light'|'dark')` or use the theme pill.
 
 Q: What date formats are supported?  
-- A: See “items.json schema” above (multiple string formats and timestamps).

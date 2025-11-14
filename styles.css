@@ -27,6 +27,16 @@
 
     --card-spacing: 30px;
 
+    --aurora-hue-1: 215;
+
+    --aurora-hue-2: 285;
+
+    --aurora-angle: 0deg;
+
+    --card-border-glow: rgba(76, 201, 240, 0.35);
+
+    --orb-color: rgba(76, 201, 240, 0.25);
+
     color-scheme: light;
 }
 
@@ -47,6 +57,70 @@ body {
         background-color 0.35s ease,
         color 0.35s ease,
         background 0.35s ease;
+    position: relative;
+    z-index: 0;
+}
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    z-index: -1;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+body::before {
+    background:
+        radial-gradient(circle at 20% 25%, hsla(var(--aurora-hue-1), 80%, 70%, 0.75), transparent 55%),
+        radial-gradient(circle at 80% 10%, hsla(var(--aurora-hue-2), 75%, 65%, 0.7), transparent 50%);
+    filter: blur(90px);
+    opacity: 0.45;
+    transform: rotate(var(--aurora-angle));
+}
+
+body::after {
+    background: radial-gradient(circle at 50% 50%, rgba(67, 97, 238, 0.15), transparent 55%);
+    filter: blur(120px);
+    opacity: 0.35;
+}
+
+#ambientOrbs {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    mix-blend-mode: screen;
+}
+
+.ambient-orb {
+    position: absolute;
+    width: clamp(120px, 18vw, 320px);
+    height: clamp(120px, 18vw, 320px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(76, 201, 240, 0.4), transparent 65%);
+    filter: blur(18px);
+    opacity: 0.25;
+}
+
+#ambientOrbs {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    mix-blend-mode: screen;
+}
+
+.ambient-orb {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.55), transparent 65%);
+    opacity: 0.45;
+    filter: blur(8px);
 }
 
 .container {
@@ -309,6 +383,14 @@ select:-webkit-autofill {
     background: var(--card-bg);
 
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+:root[data-theme="dark"] body::before {
+    opacity: 0.55;
+}
+
+:root[data-theme="dark"] body::after {
+    opacity: 0.45;
 }
 
 /* Increase contrast for the time banner in dark mode */
@@ -605,6 +687,22 @@ select:-webkit-autofill {
         border-color 0.35s ease,
         color 0.35s ease,
         backdrop-filter 0.35s ease;
+    box-shadow: 0 25px 45px -35px rgba(15, 23, 42, 0.6);
+}
+
+.item-card::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.35), rgba(76, 201, 240, 0.25));
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.45s ease;
+}
+
+.item-card:hover::after {
+    opacity: 1;
 }
 
 .item-header {
@@ -836,5 +934,13 @@ select:-webkit-autofill {
         transition: none !important;
 
         animation: none !important;
+    }
+    body::before,
+    body::after {
+        opacity: 0.15;
+    }
+
+    #ambientOrbs {
+        display: none;
     }
 }
