@@ -266,11 +266,11 @@ function initAmbientOrbs(count = 8) {
     orb.style.top = `${Math.random() * 100}%`;
     orb.style.left = `${Math.random() * 100}%`;
     
-    // New gradient color scheme: cyan → purple → pink
+    // iOS 26 Liquid Glass: Soft blue tones
     const colors = [
-      'rgba(18, 194, 233, 0.3)',   // cyan
-      'rgba(196, 113, 237, 0.3)',  // purple
-      'rgba(246, 79, 89, 0.25)'    // pink
+      'rgba(0, 122, 255, 0.2)',    // iOS blue
+      'rgba(90, 200, 250, 0.18)',  // light blue
+      'rgba(0, 199, 190, 0.15)'    // teal
     ];
     const color = colors[index % colors.length];
     orb.style.background = `radial-gradient(circle, ${color}, transparent 70%)`;
