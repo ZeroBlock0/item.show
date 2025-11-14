@@ -442,6 +442,11 @@ select:-webkit-autofill {
     letter-spacing: -0.5px;
 }
 
+.title-char {
+    display: inline-block;
+    transform-origin: center 80%;
+}
+
 .main-content {
     padding-top: 30px;
 }

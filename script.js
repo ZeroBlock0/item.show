@@ -102,9 +102,48 @@ let globalTotalValue = 0;
 
 let globalTotalItems = 0;
 let globalAvgDailyCost = 0;
+let titleSplitInstance = null;
+let auroraAnimationController = null;
+const springEaseCache = {};
 
 function animeIsReady() {
-  return typeof anime !== "undefined";
+  return typeof anime !== "undefined" && typeof anime.animate === "function";
+}
+
+function getSpringEase(key, config, fallback = "easeOutQuad") {
+  if (springEaseCache[key]) return springEaseCache[key];
+  if (!animeIsReady() || typeof anime.spring !== "function") {
+    springEaseCache[key] = fallback;
+    return fallback;
+  }
+  const spring = anime.spring(config);
+  springEaseCache[key] = spring?.ease || fallback;
+  return springEaseCache[key];
+}
+
+function initTitleIntro() {
+  if (!animeIsReady() || !anime.text || typeof anime.text.split !== "function") return;
+  if (titleSplitInstance && typeof titleSplitInstance.revert === "function") {
+    titleSplitInstance.revert();
+  }
+  titleSplitInstance = anime.text.split("#appTitle", {
+    chars: { class: "title-char" },
+    accessible: true,
+  });
+  const chars = document.querySelectorAll("#mainHeader .title-char");
+  if (!chars.length) return;
+  anime.animate(chars, {
+    opacity: [0, 1],
+    translateY: [18, 0],
+    rotateX: [-25, 0],
+    delay: anime.stagger(40),
+    duration: 900,
+    easing: getSpringEase(
+      "titleChars",
+      { mass: 1, stiffness: 120, damping: 18 },
+      "easeOutExpo",
+    ),
+  });
 }
 
 function initPageIntroTimeline() {
@@ -146,16 +185,43 @@ function initPageIntroTimeline() {
 
 function startAuroraBackgroundAnimation() {
   if (!animeIsReady()) return;
-  anime({
-    targets: document.documentElement,
-    "--aurora-hue-1": [205, 325],
-    "--aurora-hue-2": [285, 125],
-    "--aurora-angle": ["-15deg", "345deg"],
+  if (auroraAnimationController?.cancel) {
+    auroraAnimationController.cancel();
+  }
+  const keyframes = [
+    {
+      "--aurora-hue-1": "205",
+      "--aurora-hue-2": "285",
+      "--aurora-angle": "-15deg",
+    },
+    {
+      "--aurora-hue-1": "325",
+      "--aurora-hue-2": "125",
+      "--aurora-angle": "345deg",
+    },
+  ];
+  const shared = {
     duration: 28000,
     direction: "alternate",
     easing: "linear",
-    loop: true,
-  });
+    iterations: Infinity,
+  };
+  if (anime.waapi && typeof anime.waapi.animate === "function") {
+    auroraAnimationController = anime.waapi.animate(document.documentElement, {
+      keyframes,
+      ...shared,
+    });
+  } else {
+    auroraAnimationController = anime.animate(document.documentElement, {
+      "--aurora-hue-1": [205, 325],
+      "--aurora-hue-2": [285, 125],
+      "--aurora-angle": ["-15deg", "345deg"],
+      duration: shared.duration,
+      direction: shared.direction,
+      easing: shared.easing,
+      loop: true,
+    });
+  }
 }
 
 function initAmbientOrbs(count = 6) {
@@ -170,8 +236,7 @@ function initAmbientOrbs(count = 6) {
     orb.style.top = `${Math.random() * 100}%`;
     orb.style.left = `${Math.random() * 100}%`;
     layer.appendChild(orb);
-    anime({
-      targets: orb,
+    anime.animate(orb, {
       translateX: () => anime.random(-80, 80),
       translateY: () => anime.random(-80, 80),
       scale: () => anime.random(0.6, 1.4),
@@ -187,14 +252,17 @@ function initAmbientOrbs(count = 6) {
 
 function pulseStatCards() {
   if (!animeIsReady()) return;
-  anime({
-    targets: ".stat-card .icon",
+  anime.animate(".stat-card .icon", {
     keyframes: [
       { scale: 0.9, opacity: 0.15, duration: 0 },
       { scale: 1.25, opacity: 0.3, duration: 900 },
       { scale: 1, opacity: 0.2, duration: 800 },
     ],
-    easing: "easeInOutSine",
+    easing: getSpringEase(
+      "statPulse",
+      { mass: 0.5, stiffness: 90, damping: 14 },
+      "easeInOutSine",
+    ),
     delay: anime.stagger(350),
     loop: true,
   });
@@ -204,18 +272,20 @@ function runItemCardAnimation() {
   if (!animeIsReady()) return;
   const cards = document.querySelectorAll(".item-card");
   if (!cards.length) return;
-  anime({
-    targets: cards,
+  anime.animate(cards, {
     opacity: [0, 1],
     translateY: [40, 0],
     rotateX: [-8, 0],
     scale: [0.96, 1],
     delay: anime.stagger(85),
     duration: 900,
-    easing: "easeOutQuint",
+    easing: getSpringEase(
+      "cardEntrance",
+      { mass: 0.8, stiffness: 140, damping: 18 },
+      "easeOutQuint",
+    ),
   });
-  anime({
-    targets: cards,
+  anime.animate(cards, {
     "--blur-amount": ["14px", "0px"],
     delay: anime.stagger(85),
     duration: 1100,
@@ -615,11 +685,16 @@ function animateStatsCounters() {
   totalItemsElement.textContent = "0";
   avgDailyCostElement.textContent = "¥0.00";
 
+  const counterEase = getSpringEase(
+    "counters",
+    { mass: 1, stiffness: 80, damping: 20 },
+    "easeOutQuad",
+  );
+
   // Animate total value
-  anime({
-    targets: { num: 0 },
+  anime.animate({ num: 0 }, {
     num: globalTotalValue,
-    easing: "easeOutQuad",
+    easing: counterEase,
     duration: 1500,
     update: (anim) => {
       totalValueElement.textContent = `¥${Math.round(anim.animatables[0].target.num).toLocaleString()}`;
@@ -630,10 +705,9 @@ function animateStatsCounters() {
   });
 
   // Animate total items
-  anime({
-    targets: { num: 0 },
+  anime.animate({ num: 0 }, {
     num: globalTotalItems,
-    easing: "easeOutQuad",
+    easing: counterEase,
     duration: 1200,
     round: 1,
     update: (anim) => {
@@ -645,10 +719,9 @@ function animateStatsCounters() {
   });
 
   // Animate average daily cost
-  anime({
-    targets: { num: 0 },
+  anime.animate({ num: 0 }, {
     num: globalAvgDailyCost,
-    easing: "easeOutQuad",
+    easing: counterEase,
     duration: 1500,
     update: (anim) => {
       avgDailyCostElement.textContent = `¥${anim.animatables[0].target.num.toFixed(2)}`;
@@ -694,6 +767,7 @@ document.addEventListener("DOMContentLoaded", () => {
   startAuroraBackgroundAnimation();
   initAmbientOrbs();
   pulseStatCards();
+  initTitleIntro();
 
   const initialRender = () => {
     updateStatistics();
@@ -740,6 +814,10 @@ document.addEventListener("DOMContentLoaded", () => {
     updateStatistics();
     renderItems(items);
     updateRealTime();
+    initTitleIntro();
+  });
+  document.addEventListener("themeChanged", () => {
+    startAuroraBackgroundAnimation();
   });
 
   // i18n definitions removed from script.js.
