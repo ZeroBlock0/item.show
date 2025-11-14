@@ -122,11 +122,11 @@ function getSpringEase(key, config, fallback = "easeOutQuad") {
 }
 
 function initTitleIntro() {
-  if (!animeIsReady() || !anime.text || typeof anime.text.split !== "function") return;
+  if (!animeIsReady() || !anime.text || typeof anime.text.splitText !== "function") return;
   if (titleSplitInstance && typeof titleSplitInstance.revert === "function") {
     titleSplitInstance.revert();
   }
-  titleSplitInstance = anime.text.split("#appTitle", {
+  titleSplitInstance = anime.text.splitText("#appTitle", {
     chars: { class: "title-char" },
     accessible: true,
   });
@@ -138,7 +138,7 @@ function initTitleIntro() {
     rotateX: [-25, 0],
     delay: anime.stagger(40),
     duration: 900,
-    easing: getSpringEase(
+    ease: getSpringEase(
       "titleChars",
       { mass: 1, stiffness: 120, damping: 18 },
       "easeOutExpo",
@@ -151,11 +151,11 @@ function initPageIntroTimeline() {
   const targets = ["#mainHeader", ".time-banner", ".stat-card", ".items-section"];
   anime.set(targets, { opacity: 0, translateY: 30 });
   anime
-    .timeline({ easing: "easeOutExpo", duration: 650 })
-    .add({ targets: "#mainHeader", opacity: [0, 1], translateY: [-30, 0] })
+    .createTimeline({ ease: "easeOutExpo", duration: 650 })
+    .add("#mainHeader", { opacity: [0, 1], translateY: [-30, 0] })
     .add(
+      ".time-banner",
       {
-        targets: ".time-banner",
         opacity: [0, 1],
         translateY: [20, 0],
         duration: 600,
@@ -163,8 +163,8 @@ function initPageIntroTimeline() {
       "-=250",
     )
     .add(
+      ".stat-card",
       {
-        targets: ".stat-card",
         opacity: [0, 1],
         translateY: [40, 0],
         delay: anime.stagger(120),
@@ -173,8 +173,8 @@ function initPageIntroTimeline() {
       "-=200",
     )
     .add(
+      ".items-section",
       {
-        targets: ".items-section",
         opacity: [0, 1],
         scale: [0.95, 1],
         duration: 600,
@@ -203,7 +203,7 @@ function startAuroraBackgroundAnimation() {
   const shared = {
     duration: 28000,
     direction: "alternate",
-    easing: "linear",
+    ease: "linear",
     iterations: Infinity,
   };
   if (anime.waapi && typeof anime.waapi.animate === "function") {
@@ -218,7 +218,7 @@ function startAuroraBackgroundAnimation() {
       "--aurora-angle": ["-15deg", "345deg"],
       duration: shared.duration,
       direction: shared.direction,
-      easing: shared.easing,
+      ease: shared.ease,
       loop: true,
     });
   }
@@ -240,7 +240,7 @@ function initAmbientOrbs(count = 6) {
       translateX: () => anime.random(-80, 80),
       translateY: () => anime.random(-80, 80),
       scale: () => anime.random(0.6, 1.4),
-      easing: "easeInOutSine",
+      ease: "easeInOutSine",
       direction: "alternate",
       loop: true,
       duration: anime.random(5000, 11000),
@@ -258,7 +258,7 @@ function pulseStatCards() {
       { scale: 1.25, opacity: 0.3, duration: 900 },
       { scale: 1, opacity: 0.2, duration: 800 },
     ],
-    easing: getSpringEase(
+    ease: getSpringEase(
       "statPulse",
       { mass: 0.5, stiffness: 90, damping: 14 },
       "easeInOutSine",
@@ -279,7 +279,7 @@ function runItemCardAnimation() {
     scale: [0.96, 1],
     delay: anime.stagger(85),
     duration: 900,
-    easing: getSpringEase(
+    ease: getSpringEase(
       "cardEntrance",
       { mass: 0.8, stiffness: 140, damping: 18 },
       "easeOutQuint",
@@ -289,7 +289,7 @@ function runItemCardAnimation() {
     "--blur-amount": ["14px", "0px"],
     delay: anime.stagger(85),
     duration: 1100,
-    easing: "easeOutCubic",
+    ease: "easeOutCubic",
   });
 }
 
@@ -694,12 +694,12 @@ function animateStatsCounters() {
   // Animate total value
   anime.animate({ num: 0 }, {
     num: globalTotalValue,
-    easing: counterEase,
+    ease: counterEase,
     duration: 1500,
-    update: (anim) => {
-      totalValueElement.textContent = `¥${Math.round(anim.animatables[0].target.num).toLocaleString()}`;
+    onUpdate: (self) => {
+      totalValueElement.textContent = `¥${Math.round(self.targets[0].num).toLocaleString()}`;
     },
-    complete: () => {
+    onComplete: () => {
       totalValueElement.textContent = `¥${globalTotalValue.toLocaleString()}`;
     },
   });
@@ -707,13 +707,12 @@ function animateStatsCounters() {
   // Animate total items
   anime.animate({ num: 0 }, {
     num: globalTotalItems,
-    easing: counterEase,
+    ease: counterEase,
     duration: 1200,
-    round: 1,
-    update: (anim) => {
-      totalItemsElement.textContent = anim.animatables[0].target.num;
+    onUpdate: (self) => {
+      totalItemsElement.textContent = Math.round(self.targets[0].num);
     },
-    complete: () => {
+    onComplete: () => {
       totalItemsElement.textContent = globalTotalItems;
     },
   });
@@ -721,12 +720,12 @@ function animateStatsCounters() {
   // Animate average daily cost
   anime.animate({ num: 0 }, {
     num: globalAvgDailyCost,
-    easing: counterEase,
+    ease: counterEase,
     duration: 1500,
-    update: (anim) => {
-      avgDailyCostElement.textContent = `¥${anim.animatables[0].target.num.toFixed(2)}`;
+    onUpdate: (self) => {
+      avgDailyCostElement.textContent = `¥${self.targets[0].num.toFixed(2)}`;
     },
-    complete: () => {
+    onComplete: () => {
       avgDailyCostElement.textContent = `¥${globalAvgDailyCost.toFixed(2)}`;
     },
   });
