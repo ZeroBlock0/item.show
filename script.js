@@ -104,6 +104,8 @@ let globalTotalItems = 0;
 let globalAvgDailyCost = 0;
 let titleSplitInstance = null;
 let auroraAnimationController = null;
+let realTimeTimerController = null;
+let realTimeIntervalId = null;
 const springEaseCache = {};
 
 function animeIsReady() {
@@ -146,41 +148,40 @@ function initTitleIntro() {
   });
 }
 
-function initPageIntroTimeline() {
+function initPageIntroAnimation() {
   if (!animeIsReady()) return;
-  const targets = ["#mainHeader", ".time-banner", ".stat-card", ".items-section"];
-  anime.set(targets, { opacity: 0, translateY: 30 });
-  anime
-    .timeline({ easing: "easeOutExpo", duration: 650 })
-    .add({ targets: "#mainHeader", opacity: [0, 1], translateY: [-30, 0] })
-    .add(
-      {
-        targets: ".time-banner",
-        opacity: [0, 1],
-        translateY: [20, 0],
-        duration: 600,
-      },
-      "-=250",
-    )
-    .add(
-      {
-        targets: ".stat-card",
-        opacity: [0, 1],
-        translateY: [40, 0],
-        delay: anime.stagger(120),
-        duration: 700,
-      },
-      "-=200",
-    )
-    .add(
-      {
-        targets: ".items-section",
-        opacity: [0, 1],
-        scale: [0.95, 1],
-        duration: 600,
-      },
-      "-=250",
-    );
+  const easing = "easeOutExpo";
+
+  anime.animate("#mainHeader", {
+    opacity: [0, 1],
+    translateY: [-30, 0],
+    duration: 650,
+    easing,
+  });
+
+  anime.animate(".time-banner", {
+    opacity: [0, 1],
+    translateY: [20, 0],
+    duration: 600,
+    easing,
+    delay: 400,
+  });
+
+  anime.animate(".stat-card", {
+    opacity: [0, 1],
+    translateY: [40, 0],
+    duration: 700,
+    easing,
+    delay: anime.stagger(120, { start: 800 }),
+  });
+
+  anime.animate(".items-section", {
+    opacity: [0, 1],
+    scale: [0.95, 1],
+    duration: 600,
+    easing,
+    delay: 1250,
+  });
 }
 
 function startAuroraBackgroundAnimation() {
@@ -222,6 +223,32 @@ function startAuroraBackgroundAnimation() {
       loop: true,
     });
   }
+}
+
+function stopRealTimeTimer() {
+  if (realTimeTimerController?.cancel) {
+    realTimeTimerController.cancel();
+  }
+  realTimeTimerController = null;
+  if (realTimeIntervalId) {
+    clearInterval(realTimeIntervalId);
+    realTimeIntervalId = null;
+  }
+}
+
+function startRealTimeTimer() {
+  updateRealTime();
+  stopRealTimeTimer();
+  if (!animeIsReady() || typeof anime.createTimer !== "function") {
+    realTimeIntervalId = setInterval(updateRealTime, 1000);
+    return;
+  }
+  realTimeTimerController = anime.createTimer({
+    duration: 1000,
+    loop: true,
+    autoplay: true,
+    onLoop: () => updateRealTime(),
+  });
 }
 
 function initAmbientOrbs(count = 6) {
@@ -691,40 +718,43 @@ function animateStatsCounters() {
     "easeOutQuad",
   );
 
+  const totalValueCounter = { num: 0 };
   // Animate total value
-  anime.animate({ num: 0 }, {
+  anime.animate(totalValueCounter, {
     num: globalTotalValue,
     easing: counterEase,
     duration: 1500,
-    update: (anim) => {
-      totalValueElement.textContent = `¥${Math.round(anim.animatables[0].target.num).toLocaleString()}`;
+    update: () => {
+      totalValueElement.textContent = `¥${Math.round(totalValueCounter.num).toLocaleString()}`;
     },
     complete: () => {
       totalValueElement.textContent = `¥${globalTotalValue.toLocaleString()}`;
     },
   });
 
+  const totalItemsCounter = { num: 0 };
   // Animate total items
-  anime.animate({ num: 0 }, {
+  anime.animate(totalItemsCounter, {
     num: globalTotalItems,
     easing: counterEase,
     duration: 1200,
     round: 1,
-    update: (anim) => {
-      totalItemsElement.textContent = anim.animatables[0].target.num;
+    update: () => {
+      totalItemsElement.textContent = Math.round(totalItemsCounter.num);
     },
     complete: () => {
       totalItemsElement.textContent = globalTotalItems;
     },
   });
 
+  const avgDailyCounter = { num: 0 };
   // Animate average daily cost
-  anime.animate({ num: 0 }, {
+  anime.animate(avgDailyCounter, {
     num: globalAvgDailyCost,
     easing: counterEase,
     duration: 1500,
-    update: (anim) => {
-      avgDailyCostElement.textContent = `¥${anim.animatables[0].target.num.toFixed(2)}`;
+    update: () => {
+      avgDailyCostElement.textContent = `¥${avgDailyCounter.num.toFixed(2)}`;
     },
     complete: () => {
       avgDailyCostElement.textContent = `¥${globalAvgDailyCost.toFixed(2)}`;
@@ -761,9 +791,8 @@ function handleSearch() {
 
 // Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
-  updateRealTime();
-  setInterval(updateRealTime, 1000);
-  initPageIntroTimeline();
+  startRealTimeTimer();
+  initPageIntroAnimation();
   startAuroraBackgroundAnimation();
   initAmbientOrbs();
   pulseStatCards();
@@ -822,4 +851,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // i18n definitions removed from script.js.
   // Use global currentLang() and t() provided by lang.js.
+});
+
+window.addEventListener("beforeunload", () => {
+  stopRealTimeTimer();
 });

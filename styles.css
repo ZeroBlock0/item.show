@@ -429,7 +429,8 @@ select:-webkit-autofill {
     background: linear-gradient(45deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
+    color: var(--text-primary);
+    -webkit-text-fill-color: transparent;
 }
 
 .logo h1 {
@@ -438,7 +439,8 @@ select:-webkit-autofill {
     background: linear-gradient(45deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     background-clip: text;
-    color: transparent;
+    color: var(--text-primary);
+    -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
 }
 

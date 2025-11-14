@@ -23,7 +23,7 @@
 
 - 已内置官方 anime.js **4.2.2**（`anime/dist/bundles/anime.umd.min.js`）。页面在 `<head>` 中本地加载，无需外网 CDN。
 - `script.js` 中新增了以下基于文档示例改造的特效：
-  - `initPageIntroTimeline()`：首屏淡入时间线，分段/stagger 控制。
+  - `initPageIntroAnimation()`：首屏淡入动效，利用 anime.js animation API 与 stagger 组合。
   - `startAuroraBackgroundAnimation()`：通过 CSS 变量驱动的极光背景渐变。
   - `initAmbientOrbs()`：创建漂浮粒子层，使用随机 translate/scale 循环。
   - `pulseStatCards()`：仪表卡片 icon 的循环脉冲。

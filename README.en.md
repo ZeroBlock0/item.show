@@ -18,7 +18,7 @@ A lightweight static dashboard to browse your personal items and their lifecycle
 
 - Bundled with the official anime.js **4.2.2** build (`anime/dist/bundles/anime.umd.min.js`) so the dashboard works offline/CDN-free.
 - `script.js` now exposes several doc-inspired helpers:
-  - `initPageIntroTimeline()` — orchestrates the header, banner, stats, and content entrance with `timeline` + `stagger`.
+  - `initPageIntroAnimation()` — orchestrates the header, banner, stats, and content entrance with the animation API + `stagger`.
   - `startAuroraBackgroundAnimation()` — animates CSS custom props that drive the aurora gradients in `styles.css`.
   - `initAmbientOrbs()` — spawns floating orb particles with randomized translate/scale loops.
   - `pulseStatCards()` — gently pulses stat-card icons using keyframes.
