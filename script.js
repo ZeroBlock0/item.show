@@ -266,11 +266,11 @@ function initAmbientOrbs(count = 8) {
     orb.style.top = `${Math.random() * 100}%`;
     orb.style.left = `${Math.random() * 100}%`;
     
-    // Alternate colors for more variety
+    // New gradient color scheme: cyan → purple → pink
     const colors = [
-      'rgba(255, 20, 97, 0.3)',
-      'rgba(24, 255, 146, 0.3)',
-      'rgba(0, 217, 255, 0.25)'
+      'rgba(18, 194, 233, 0.3)',   // cyan
+      'rgba(196, 113, 237, 0.3)',  // purple
+      'rgba(246, 79, 89, 0.25)'    // pink
     ];
     const color = colors[index % colors.length];
     orb.style.background = `radial-gradient(circle, ${color}, transparent 70%)`;

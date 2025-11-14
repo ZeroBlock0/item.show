@@ -1,11 +1,12 @@
 :root {
-    --primary: #FF1461;
+    /* New gradient color scheme: cyan → purple → pink */
+    --primary: #12C2E9; /* cyan */
 
-    --primary-light: #FF4081;
+    --primary-light: #C471ED; /* purple */
 
-    --secondary: #18FF92;
+    --secondary: #F64F59; /* pink */
 
-    --success: #00D9FF;
+    --success: #12C2E9; /* cyan */
 
     --light: #f8f9fa;
 
@@ -13,29 +14,29 @@
 
     --darker: #0a0e27;
 
-    --danger: #FF1461;
+    --danger: #F64F59; /* pink */
 
-    --warning: #FFC107;
+    --warning: #C471ED; /* purple */
 
     --gray: #6c757d;
 
     --card-bg: rgba(255, 255, 255, 0.95);
 
-    --time-bg: rgba(255, 20, 97, 0.08);
+    --time-bg: rgba(18, 194, 233, 0.08);
 
     --header-height: 80px;
 
     --card-spacing: 30px;
 
-    --aurora-hue-1: 340;
+    --aurora-hue-1: 190; /* cyan hue */
 
-    --aurora-hue-2: 160;
+    --aurora-hue-2: 280; /* purple hue */
 
     --aurora-angle: 0deg;
 
-    --card-border-glow: rgba(255, 20, 97, 0.4);
+    --card-border-glow: rgba(196, 113, 237, 0.4);
 
-    --orb-color: rgba(24, 255, 146, 0.3);
+    --orb-color: rgba(18, 194, 233, 0.3);
 
     /* iOS 26 Liquid Glass Variables */
     --glass-tint: rgba(255, 255, 255, 0.05);
@@ -263,9 +264,10 @@ header::before {
 .pill-btn {
     appearance: none;
     background: linear-gradient(
-        135deg, 
-        rgba(255, 20, 97, 0.7) 0%, 
-        rgba(24, 255, 146, 0.5) 100%
+        to right, 
+        rgba(18, 194, 233, 0.7) 0%, 
+        rgba(196, 113, 237, 0.6) 50%,
+        rgba(246, 79, 89, 0.6) 100%
     );
     color: #fff;
     font-weight: 600;
@@ -279,7 +281,7 @@ header::before {
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     box-shadow: 
-        0 4px 16px rgba(255, 20, 97, 0.3),
+        0 4px 16px rgba(196, 113, 237, 0.3),
         inset 0 1px 0 var(--glass-highlight),
         inset 0 0 20px rgba(255, 255, 255, 0.1);
     transition:
@@ -316,9 +318,9 @@ header::before {
 .pill-btn:hover {
     transform: translateY(-3px) scale(1.08);
     box-shadow: 
-        0 8px 28px rgba(255, 20, 97, 0.5),
-        0 4px 12px rgba(24, 255, 146, 0.3),
-        0 0 40px rgba(255, 20, 97, 0.2),
+        0 8px 28px rgba(196, 113, 237, 0.5),
+        0 4px 12px rgba(18, 194, 233, 0.3),
+        0 0 40px rgba(246, 79, 89, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.4),
         inset 0 0 30px rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.4);
@@ -776,9 +778,10 @@ select:-webkit-autofill {
     right: 0;
     bottom: 0;
     background: linear-gradient(
-        135deg, 
-        rgba(255, 20, 97, 0.08), 
-        rgba(24, 255, 146, 0.06)
+        to right, 
+        rgba(18, 194, 233, 0.08), 
+        rgba(196, 113, 237, 0.08),
+        rgba(246, 79, 89, 0.06)
     );
     opacity: 0;
     transition: opacity 0.5s ease;
@@ -798,9 +801,9 @@ select:-webkit-autofill {
     transform: translateY(-12px) scale(1.03);
     border-color: rgba(255, 255, 255, 0.3);
     box-shadow: 
-        0 20px 60px rgba(255, 20, 97, 0.25),
+        0 20px 60px rgba(196, 113, 237, 0.25),
         0 8px 16px rgba(0, 0, 0, 0.2),
-        0 0 80px rgba(24, 255, 146, 0.15),
+        0 0 80px rgba(18, 194, 233, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.3),
         inset 0 0 60px rgba(255, 255, 255, 0.08);
 }
@@ -1001,18 +1004,18 @@ select:-webkit-autofill {
 
 .search-box input:focus {
     outline: none;
-    border-color: rgba(255, 20, 97, 0.6);
+    border-color: rgba(196, 113, 237, 0.6);
     box-shadow: 
-        0 0 0 4px rgba(255, 20, 97, 0.15),
-        0 8px 24px rgba(255, 20, 97, 0.3),
+        0 0 0 4px rgba(196, 113, 237, 0.15),
+        0 8px 24px rgba(196, 113, 237, 0.3),
         inset 0 1px 3px rgba(0, 0, 0, 0.2),
-        inset 0 0 30px rgba(255, 20, 97, 0.1);
+        inset 0 0 30px rgba(196, 113, 237, 0.1);
     background: rgba(10, 14, 39, 0.7);
     transform: translateY(-2px);
 }
 
 .search-box button {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    background: linear-gradient(to right, var(--primary), var(--primary-light), var(--secondary));
     color: white;
     border: none;
     border-radius: 12px;
@@ -1020,12 +1023,12 @@ select:-webkit-autofill {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(255, 20, 97, 0.4);
+    box-shadow: 0 4px 15px rgba(196, 113, 237, 0.4);
 }
 
 .search-box button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(255, 20, 97, 0.6);
+    box-shadow: 0 6px 25px rgba(196, 113, 237, 0.6);
 }
 
 .items-grid {
@@ -1089,9 +1092,10 @@ select:-webkit-autofill {
     inset: -2px;
     border-radius: inherit;
     background: linear-gradient(
-        135deg, 
-        rgba(255, 20, 97, 0.6), 
-        rgba(24, 255, 146, 0.4)
+        to right, 
+        rgba(18, 194, 233, 0.6), 
+        rgba(196, 113, 237, 0.6),
+        rgba(246, 79, 89, 0.5)
     );
     opacity: 0;
     z-index: -1;
@@ -1107,14 +1111,14 @@ select:-webkit-autofill {
     transform: translateY(-12px) scale(1.02);
     border-color: rgba(255, 255, 255, 0.3);
     box-shadow: 
-        0 24px 64px rgba(255, 20, 97, 0.25),
+        0 24px 64px rgba(196, 113, 237, 0.25),
         0 8px 16px rgba(0, 0, 0, 0.2),
-        0 0 80px rgba(24, 255, 146, 0.15),
+        0 0 80px rgba(18, 194, 233, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .item-header {
-    background: linear-gradient(135deg, rgba(255, 20, 97, 0.8), rgba(24, 255, 146, 0.4));
+    background: linear-gradient(to right, rgba(18, 194, 233, 0.8), rgba(196, 113, 237, 0.7), rgba(246, 79, 89, 0.6));
     color: white;
     padding: 24px;
     position: relative;
