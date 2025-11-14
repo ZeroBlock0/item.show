@@ -112,7 +112,7 @@ function animeIsReady() {
   return typeof anime !== "undefined" && typeof anime.animate === "function";
 }
 
-function getSpringEase(key, config, fallback = "easeOutQuad") {
+function getSpringEase(key, config, fallback = "outQuad") {
   if (springEaseCache[key]) return springEaseCache[key];
   if (!animeIsReady() || typeof anime.spring !== "function") {
     springEaseCache[key] = fallback;
@@ -143,14 +143,14 @@ function initTitleIntro() {
     ease: getSpringEase(
       "titleChars",
       { mass: 1, stiffness: 120, damping: 18 },
-      "easeOutExpo",
+      "outExpo",
     ),
   });
 }
 
 function initPageIntroAnimation() {
   if (!animeIsReady()) return;
-  const easing = "easeOutExpo";
+  const easing = "outExpo";
 
   anime.animate("#mainHeader", {
     opacity: [0, 1],
@@ -191,20 +191,24 @@ function startAuroraBackgroundAnimation() {
   }
   const keyframes = [
     {
-      "--aurora-hue-1": "205",
-      "--aurora-hue-2": "285",
-      "--aurora-angle": "-15deg",
+      "--aurora-hue-1": "340",
+      "--aurora-hue-2": "160",
+      "--aurora-angle": "-20deg",
     },
     {
-      "--aurora-hue-1": "325",
-      "--aurora-hue-2": "125",
-      "--aurora-angle": "345deg",
+      "--aurora-hue-1": "200",
+      "--aurora-hue-2": "280",
+      "--aurora-angle": "350deg",
+    },
+    {
+      "--aurora-hue-1": "340",
+      "--aurora-hue-2": "160",
+      "--aurora-angle": "-20deg",
     },
   ];
   const shared = {
-    duration: 28000,
-    direction: "alternate",
-    ease: "linear",
+    duration: 20000,
+    ease: "inOutSine",
     iterations: Infinity,
   };
   if (anime.waapi && typeof anime.waapi.animate === "function") {
@@ -214,11 +218,10 @@ function startAuroraBackgroundAnimation() {
     });
   } else {
     auroraAnimationController = anime.animate(document.documentElement, {
-      "--aurora-hue-1": [205, 325],
-      "--aurora-hue-2": [285, 125],
-      "--aurora-angle": ["-15deg", "345deg"],
+      "--aurora-hue-1": [340, 200, 340],
+      "--aurora-hue-2": [160, 280, 160],
+      "--aurora-angle": ["-20deg", "350deg", "-20deg"],
       duration: shared.duration,
-      direction: shared.direction,
       ease: shared.ease,
       loop: true,
     });
@@ -251,7 +254,7 @@ function startRealTimeTimer() {
   });
 }
 
-function initAmbientOrbs(count = 6) {
+function initAmbientOrbs(count = 8) {
   if (!animeIsReady()) return;
   if (document.getElementById("ambientOrbs")) return;
   const layer = document.createElement("div");
@@ -262,17 +265,31 @@ function initAmbientOrbs(count = 6) {
     orb.className = "ambient-orb";
     orb.style.top = `${Math.random() * 100}%`;
     orb.style.left = `${Math.random() * 100}%`;
+    
+    // iOS 26 Liquid Glass: Soft blue tones
+    const colors = [
+      'rgba(0, 122, 255, 0.2)',    // iOS blue
+      'rgba(90, 200, 250, 0.18)',  // light blue
+      'rgba(0, 199, 190, 0.15)'    // teal
+    ];
+    const color = colors[index % colors.length];
+    orb.style.background = `radial-gradient(circle, ${color}, transparent 70%)`;
+    
     layer.appendChild(orb);
     anime.animate(orb, {
-      translateX: () => anime.random(-80, 80),
-      translateY: () => anime.random(-80, 80),
-      scale: () => anime.random(0.6, 1.4),
-      ease: "easeInOutSine",
+      translateX: () => anime.random(-100, 100),
+      translateY: () => anime.random(-100, 100),
+      scale: () => anime.random(0.5, 1.6),
+      ease: "inOutSine",
       direction: "alternate",
       loop: true,
-      duration: anime.random(5000, 11000),
-      delay: index * 250,
-      opacity: [{ value: 0.15, duration: 0 }, { value: 0.45, duration: 1800 }],
+      duration: anime.random(6000, 14000),
+      delay: index * 200,
+      opacity: [
+        { value: 0.2, duration: 0 }, 
+        { value: 0.5, duration: 2000 },
+        { value: 0.3, duration: 2000 }
+      ],
     });
   });
 }
@@ -281,16 +298,16 @@ function pulseStatCards() {
   if (!animeIsReady()) return;
   anime.animate(".stat-card .icon", {
     keyframes: [
-      { scale: 0.9, opacity: 0.15, duration: 0 },
-      { scale: 1.25, opacity: 0.3, duration: 900 },
-      { scale: 1, opacity: 0.2, duration: 800 },
+      { scale: 0.85, opacity: 0.15, duration: 0 },
+      { scale: 1.35, opacity: 0.35, duration: 1000 },
+      { scale: 1, opacity: 0.25, duration: 900 },
     ],
     ease: getSpringEase(
       "statPulse",
-      { mass: 0.5, stiffness: 90, damping: 14 },
-      "easeInOutSine",
+      { mass: 0.5, stiffness: 100, damping: 15 },
+      "inOutSine",
     ),
-    delay: anime.stagger(350),
+    delay: anime.stagger(300),
     loop: true,
   });
 }
@@ -309,14 +326,14 @@ function runItemCardAnimation() {
     ease: getSpringEase(
       "cardEntrance",
       { mass: 0.8, stiffness: 140, damping: 18 },
-      "easeOutQuint",
+      "outQuint",
     ),
   });
   anime.animate(cards, {
     "--blur-amount": ["14px", "0px"],
     delay: anime.stagger(85),
     duration: 1100,
-    ease: "easeOutCubic",
+    ease: "outCubic",
   });
 }
 
@@ -715,7 +732,7 @@ function animateStatsCounters() {
   const counterEase = getSpringEase(
     "counters",
     { mass: 1, stiffness: 80, damping: 20 },
-    "easeOutQuad",
+    "outQuad",
   );
 
   const totalValueCounter = { num: 0 };
